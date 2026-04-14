@@ -47,7 +47,7 @@ def generate_reply(user_message: str) -> dict:
             {"role": "system", "content": SYSTEM_MESSAGE},
             {"role": "user", "content": user_message},
         ],
-        "temperature": 0.8,
+        "temperature": 1,
         "max_tokens": 300,
         "top_p": 1,
         "stream": False,

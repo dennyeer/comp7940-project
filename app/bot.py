@@ -17,6 +17,75 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+# Telegram message hard limit is 4096 characters.
+TELEGRAM_MESSAGE_LIMIT = 4000
+
+
+def split_long_message(text: str, limit: int = TELEGRAM_MESSAGE_LIMIT) -> list[str]:
+    """
+    Split a long message into smaller chunks so it can be sent through Telegram safely.
+    Prefer splitting by paragraph, then by line, then by raw length if needed.
+    """
+    if len(text) <= limit:
+        return [text]
+
+    chunks: list[str] = []
+    current = ""
+
+    paragraphs = text.split("\n\n")
+
+    for paragraph in paragraphs:
+        candidate = f"{current}\n\n{paragraph}".strip() if current else paragraph
+
+        if len(candidate) <= limit:
+            current = candidate
+            continue
+
+        if current:
+            chunks.append(current)
+            current = ""
+
+        # If a paragraph itself is too long, split by lines
+        if len(paragraph) > limit:
+            lines = paragraph.split("\n")
+            line_buffer = ""
+
+            for line in lines:
+                line_candidate = f"{line_buffer}\n{line}".strip() if line_buffer else line
+
+                if len(line_candidate) <= limit:
+                    line_buffer = line_candidate
+                else:
+                    if line_buffer:
+                        chunks.append(line_buffer)
+                        line_buffer = ""
+
+                    # If a single line is still too long, hard split by length
+                    while len(line) > limit:
+                        chunks.append(line[:limit])
+                        line = line[limit:]
+
+                    if line:
+                        line_buffer = line
+
+            if line_buffer:
+                chunks.append(line_buffer)
+        else:
+            current = paragraph
+
+    if current:
+        chunks.append(current)
+
+    return chunks
+
+
+async def send_reply_in_chunks(update: Update, reply_text: str) -> None:
+    """Send a reply safely, splitting it into multiple Telegram messages if necessary."""
+    chunks = split_long_message(reply_text)
+
+    for chunk in chunks:
+        await update.message.reply_text(chunk)
+
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /start command."""
@@ -73,7 +142,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         llm_result = generate_reply(user_message)
         reply_text = llm_result["reply_text"]
 
-        await update.message.reply_text(reply_text)
+        await send_reply_in_chunks(update, reply_text)
 
         save_message_log(
             collection=collection,

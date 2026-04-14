@@ -48,13 +48,18 @@ def generate_reply(user_message: str) -> dict:
             {"role": "user", "content": user_message},
         ],
         "temperature": 1,
-        "max_tokens": 300,
+        "max_tokens": 150,
         "top_p": 1,
         "stream": False,
     }
 
     start_time = time.perf_counter()
-    response = requests.post(url, json=payload, headers=headers, timeout=60)
+
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=120)
+    except requests.exceptions.RequestException as exc:
+        raise RuntimeError(f"HKBU API request failed: {exc}") from exc
+
     elapsed_ms = int((time.perf_counter() - start_time) * 1000)
 
     if response.status_code != 200:

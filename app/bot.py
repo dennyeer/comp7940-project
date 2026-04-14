@@ -21,9 +21,16 @@ logger = logging.getLogger(__name__)
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /start command."""
     welcome_message = (
-        "Hi! I am CloudCampus AI Bot.\n\n"
-        "I can help with study questions, revision tips, and general academic support.\n"
-        "Send me a message to begin."
+        "Hi! I am CloudTrip AI Bot, your AI travel concierge. ✈️🌍\n\n"
+        "I can help you with:\n"
+        "- travel itinerary planning\n"
+        "- attraction and activity suggestions\n"
+        "- transport and packing advice\n"
+        "- common travel problems during trips\n\n"
+        "Try asking me something like:\n"
+        "- Plan a 3-day Tokyo trip for me\n"
+        "- What should I do if my flight is delayed?\n"
+        "- What should I pack for Bangkok in July?"
     )
     await update.message.reply_text(welcome_message)
 
@@ -31,10 +38,19 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /help command."""
     help_message = (
+        "CloudTrip AI Bot can support two main travel scenarios:\n\n"
+        "1. Travel planning\n"
+        "- Plan a 5-day Seoul trip\n"
+        "- Suggest attractions in Sydney for a weekend\n"
+        "- Build a budget itinerary for Bangkok\n\n"
+        "2. Travel problem-solving\n"
+        "- My flight is delayed. What should I do?\n"
+        "- It is raining in Tokyo. What indoor places can I visit?\n"
+        "- I lost my passport abroad. What should I do first?\n\n"
         "Available commands:\n"
-        "/start - Start the bot\n"
-        "/help - Show help message\n\n"
-        "You can also send any study-related question directly."
+        "/start - Show welcome message\n"
+        "/help - Show this help message\n\n"
+        "You can simply send your travel question directly in natural language."
     )
     await update.message.reply_text(help_message)
 
@@ -75,7 +91,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     except Exception as exc:
         logger.exception("Failed to process message: %s", exc)
 
-        error_reply = "Sorry, something went wrong while processing your request."
+        error_reply = (
+            "Sorry, I ran into a problem while processing your travel request. "
+            "Please try again in a moment."
+        )
         await update.message.reply_text(error_reply)
 
         try:

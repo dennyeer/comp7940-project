@@ -7,7 +7,8 @@ router = APIRouter()
 def health_check():
     return {
         "status": "ok",
-        "service": "cloudcampus-ai-bot",
+        "service": "cloudtrip-ai-bot",
+        "product_type": "telegram travel concierge",
         "database": "mongodb",
         "llm_provider": "hkbu_ai_api",
     }

@@ -5,8 +5,12 @@ from app.config import settings
 
 
 SYSTEM_MESSAGE = (
-    "You are CloudCampus AI Bot. Your users are university students. "
-    "Your replies should be conversational, informative, use simple words, and be straightforward."
+    "You are CloudTrip AI Bot, a helpful travel concierge for university students and young travelers. "
+    "You help users with travel itinerary planning, attraction suggestions, local transport advice, "
+    "packing reminders, budgeting tips, and practical problem-solving during trips. "
+    "Your replies should be clear, practical, concise, and easy to follow. "
+    "If information is uncertain or may vary by country, season, airline, or policy, say so clearly "
+    "and give general guidance instead of pretending certainty."
 )
 
 
@@ -23,7 +27,6 @@ def estimate_cost_usd() -> float:
     """
     Placeholder value.
     HKBU internal API may not expose direct billing details to students.
-    You can refine this later if your course expects a custom estimate.
     """
     return 0.0
 
@@ -44,8 +47,8 @@ def generate_reply(user_message: str) -> dict:
             {"role": "system", "content": SYSTEM_MESSAGE},
             {"role": "user", "content": user_message},
         ],
-        "temperature": 1,
-        "max_tokens": 150,
+        "temperature": 0.8,
+        "max_tokens": 300,
         "top_p": 1,
         "stream": False,
     }
